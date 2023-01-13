@@ -1,0 +1,94 @@
+1. Реалізуйте генераторну функцію, яка повертатиме по одному члену числової послідовності,
+закон якої задається за допомогою функції користувача.
+ Крім цього параметром генераторної функції повинні бути значення першого члена прогресії
+ та кількість членів, що видаються послідовностю.
+ Генератор повинен зупинити свою роботу або по досягненню n-го члена, або при передачі
+ команди на завершення.
+
+def geometric_func(a_1: int, quantity: int):
+    """ Генераторна функція, яка повертає по одному члену числової послідовності """
+
+    def user_func():
+        """Функція користувача - геометрична прогресія"""
+        nonlocal a_1
+        a_1 *= a_1
+        return a_1
+
+    for i in range(quantity):
+        yield a_1
+        a_1 = user_func()
+    return user_func
+
+f_gen = geometric_func(2, 10)
+
+for elem in f_gen:
+    print(elem)
+    if elem > 100:
+        f_gen.close()
+
+2. Використовуючи замикання, реалізуйте такий прийом програмування як Мемоізація -
+ https://en.wikipedia.org/wiki/Memoization .
+Використовуйте отриманий механізм для прискорення функції рекурсивного обчислення n - го члена
+ряду Фібоначчі. Порівняйте швидкість виконання із просто рекурсивним підходом.
+
+import time
+
+"""Рекурсивна функція - пошук n-члена Фібоначчі"""
+def fibonacci(n: int):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+
+
+start = time.time()
+
+print(fibonacci(40))
+
+print("Час: ", time.time() - start)
+
+
+"""Функція пошуку n-члена Фібоначчі за допомогою мемоїзації"""
+mem = dict()
+
+def fibonacci_seq(n: int):
+    if n in mem:
+        return mem[n]
+    elif n == 0:
+        mem[n] = 0
+    elif n == 1:
+        mem[n] = 1
+    else:
+        mem[n] = fibonacci_seq(n - 1) + fibonacci_seq(n - 2)
+    return mem[n]
+
+
+start = time.time()
+
+print(fibonacci_seq(40))
+
+print("Час: ", time.time() - start)
+
+
+102334155
+Час:  17.996387243270874
+102334155
+Час:  0.0
+
+
+3. Напишіть функцію, яка застосує до списку чисел довільну функцію користувача і поверне суми
+елементів отриманого списку.
+
+def list_of_sum(my_list, user_func):
+    res_list = []
+    for elem in my_list:
+        if user_func(elem):
+            res_list.append(elem)
+    return sum(res_list)
+
+list_1 = [34, 56, 7, 4, 2, -13, 98, -56, 38, 56, 35, -48]
+func = lambda x: x % 2
+res = list_of_sum(list_1, func)
+print(res)
